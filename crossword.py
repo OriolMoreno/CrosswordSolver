@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 
+
 """
 -------------------------------------
 POSSIBLE MILLORA AL LLEGIR DICCIONARI
@@ -36,7 +37,7 @@ class paraulaTauler:
         print(self.dir,self.mida,self.coord,self.confl,self.paraula)
 
 class crossWord:
-
+    count = 0
     """
     OPCIO 1: llista nxm amb valors individuals
     """
@@ -53,7 +54,9 @@ class crossWord:
                 else:
                    taulerArray[index][index2] = int(0) 
         
-        
+        if taulerArray[-1] == [0]:
+            taulerArray.remove([0])
+
         tauler = np.asarray(taulerArray, dtype=int)
         return tauler
 
@@ -154,13 +157,13 @@ class crossWord:
     def llegirDiccionari(self, fileName):
         #file = open(fileName,'r')
         #llista = file.readlines()
-        llista = [linia.rstrip() for linia in open(fileName,'r')] # elimina les \n finals a cada paraula
+        llista = [linia.rstrip() for linia in open(fileName,'r',errors='replace')] # elimina les \n finals a cada paraula
         diccionari={}
         for paraula in llista:                                  # organitzem les paraules per longitud en un diccionari
             if len(paraula) in diccionari:
-                diccionari[len(paraula)].append(paraula)
+                diccionari[len(paraula)].append(list(paraula))
             else:
-                diccionari[len(paraula)]=[paraula]
+                diccionari[len(paraula)]=[list(paraula)]
         return diccionari
 
     def printTauler(self):
@@ -184,33 +187,53 @@ class crossWord:
         
         """
 
-    def checkColisio(self, head, paraula):
-        #for colisio in self.colisions[rest]:
-            #if colisio[0] == head:
-                #if paraula[colisio[1]] == rest[1]:
-                    #pass
-
-        return True
+    def checkColisio(self, head, paraula, LVA):
+        colisionsCorrectes = 0
+        for colisio in self.colisions[head]:
+            if LVA is None:
+                break
+            #colisio[0] es el numero de la paraula amb la que colisiona
+            if LVA[colisio[0]] is not None:   #Si hi ha colisio comprovar la lletra de les dues paraules
+                lletraParaula1 = paraula[colisio[1]]
+                #trobem lletraParaula2
+                found = False
+                i = 0
+                while not found:
+                    colisioParaula2 = self.colisions[colisio[0]][i]
+                    if head == colisioParaula2[0]:
+                        found = True
+                        paraula2 = LVA[colisio[0]]
+                        lletraParaula2 = paraula2[colisioParaula2[1]]
+                    else:
+                        i += 1
+                if lletraParaula1 == lletraParaula2:
+                    colisionsCorrectes += 1
+                else:
+                    return False
+            else:
+                colisionsCorrectes += 1
+        if colisionsCorrectes == len(self.colisions[head]):
+            return True
+        return False
 
     # LVNA = np.arange(1, self.paraules.shape[0])
 
 
     def backtracking(self, LVA, LVNA):
-        if len(LVA) == self.paraules.shape[0] - 1:
+        if None not in LVA:
             return LVA
         else:
             head = LVNA[0]
-            for conjunt in self.diccionari.values():
-                for paraula in conjunt:
-                    if len(paraula) == self.paraules[head, SIZE]:
-                        if self.checkColisio(head, paraula):
-                            LVA.append([head, paraula])
-                            LVA = self.backtracking(LVA, LVNA[1:])
-                            if len(LVA) == self.paraules.shape[0] - 1:
-                                return LVA
-                    else:
-                        break
-        return "Error"
+            for paraula in self.diccionari[self.paraules[head][SIZE]]:
+                if self.checkColisio(head, paraula, LVA):
+                    LVA[head] = paraula
+                    resultat = self.backtracking(LVA, LVNA[1:])
+                    if LVA is None:
+                        pass
+                    elif None not in LVA:
+                        return resultat
+
+        return None
     
         
     def __init__(self, dic, tauler):
@@ -233,7 +256,9 @@ print(hola.tauler)
 print(hola.colisions)
 
 LVNA = np.arange(1, hola.paraules.shape[0])
-lva=[]
+lva = [None] * (hola.paraules.shape[0])
+lva[0] = "empty"
+
 lva = hola.backtracking(lva, LVNA)      #np.zeros((1,2), dtype = object)
 print(lva)
 
