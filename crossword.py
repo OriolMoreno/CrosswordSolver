@@ -44,21 +44,24 @@ class crossWord:
     #llegeix el fitxer que conté el crossword i guarda la informació en una matriu n x m (soluciona lectura de caracters \n, \t)
     def llegirTauler1(self, fileName):
         taulerArray=[]
+        a=[]
         text_file = open(fileName, 'r')
         lines = text_file.read().split('\n')
         for index, i in enumerate(lines):
             taulerArray.append(i.split('\t'))
+            a.append(i.split('\t'))
             for index2, casella in enumerate(taulerArray[index]):
                 if(taulerArray[index][index2] == '#'):
                    taulerArray[index][index2] = int(-1)
                 else:
-                   taulerArray[index][index2] = int(0) 
-        
+                   taulerArray[index][index2] = int(0)
+
         if taulerArray[-1] == [0]:
             taulerArray.remove([0])
 
         tauler = np.asarray(taulerArray, dtype=int)
-        return tauler
+        a = np.asarray(a, dtype=str)
+        return tauler, a
 
     """
     OPCIO 2: llista de paraules que hi ha al tauler utilitzant la classe paraulaTauler
@@ -73,19 +76,19 @@ class crossWord:
             col=0
             mida=0
             colIni= col #primera casella de cada fila
-            
+
             while(col<taulerArray.shape[1]):                                                #comprovem que no hem arribat al final de la fila
                 if(f[col] == -1):                                              #si ens trobem coixinet
                     #if(col+1<taulerArray.shape[1]):                                         #comprovem que el coixinet no sigui la ultima casella
                         if(mida > 1):
                                                                                         #si la paraula fins ara te mes duna lletra, l'afegim a la llista de paraules creant una nova instancia
                             self.paraules=np.append(self.paraules,[[fila,colIni,mida,H]], axis=0)
-                            
+
                             contParaula+=1
                             self.colisions.append([])
                         elif (mida == 1):
                             taulerArray[fila][col-1] = 0
-                            
+
                         colIni=col+1                                   #actualitzem novves coordenades i mida nova paraula
                         mida = 0
                 else:
@@ -93,7 +96,7 @@ class crossWord:
                         mida+=1                                       #no hi ha coixinet i hem arribat al final de la fila
                         if(mida > 1):                                           #tornem a comprovar si cumpleix amb els requisits de la mida
                             self.paraules=np.append(self.paraules,[[fila,colIni,mida,H]], axis=0)
-                            
+
                             self.colisions.append([])
                             #print('kpasa2',coord)
                             mida=0
@@ -105,7 +108,7 @@ class crossWord:
                         if(taulerArray[fila][col] == 0):                #Si equesta casella està buida, hi assignem la paraula actual
                             taulerArray[fila][col] = contParaula
                 col += 1
-                
+
         for fila,f in enumerate(taulerArray.T):
             #print(taulerArray)
             col=0
@@ -122,7 +125,7 @@ class crossWord:
                     mida = 0
                 else:
 
-                        
+
                     if(col+1>=taulerArray.shape[0]):
 
                         if (taulerArray[col][fila] == 0):  # Si aquesta casella està buida, hi assignem la paraula actual
@@ -224,7 +227,7 @@ class crossWord:
             return LVA
         else:
             head = LVNA[0]
-            for paraula in self.diccionari[self.paraules[head][SIZE]]:
+            for paraula in self.diccionari[self.paraules[head][SIZE]]:  #iterem només a les paraules del diccionari que tenen la mateixa mida que la variable que volem omplir
                 if self.checkColisio(head, paraula, LVA):
                     LVA[head] = paraula
                     resultat = self.backtracking(LVA, LVNA[1:])
@@ -234,20 +237,46 @@ class crossWord:
                         return resultat
 
         return None
-    
-        
+
+    def calcula(self):
+        LVNA = np.arange(1, self.paraules.shape[0])
+        lva = [None] * (self.paraules.shape[0])
+        lva[0] = "empty"
+        lva = hola.backtracking(lva, LVNA)
+
+        for index, paraula in enumerate(lva):
+            if paraula == 'empty':
+                pass
+            elif self.paraules[index][DIR]==H:
+                x = self.paraules[index][X]
+                y = self.paraules[index][Y]
+                for lletra in paraula:
+                    self.taulerResultats[x][y] = lletra
+                    y+=1
+            elif self.paraules[index][DIR]==V:
+                x = self.paraules[index][X]
+                y = self.paraules[index][Y]
+                for lletra in paraula:
+                    self.taulerResultats[x][y] = lletra
+                    x+=1
+
+        np.savetxt('crossword_Resolt.txt', self.taulerResultats, delimiter='\t', fmt='%s') #escriu el resultat a un fitxer
+
+
+
     def __init__(self, dic, tauler):
         self.paraules = np.zeros((1,4), dtype=int)
         self.colisions = [[],[]]
         self.diccionari = self.llegirDiccionari(dic)
-        self.tauler = self.llegirTauler1(tauler)
+        self.tauler, self.taulerResultats = self.llegirTauler1(tauler)
         self.llegirTauler(tauler)
-        
+
 
 
 
 
 hola = crossWord('diccionari_CB.txt','crossword_CB.txt')
+"""
 print(hola.diccionari)
 #hola.printTauler()
 
@@ -261,10 +290,11 @@ lva[0] = "empty"
 
 lva = hola.backtracking(lva, LVNA)      #np.zeros((1,2), dtype = object)
 print(lva)
+"""
+#print(hola.paraules)
+hola.calcula()
+print(hola.taulerResultats)
 
-
-        
-        
 """
 paraules = np.zeros((2,4), dtype=int)
 paraules2 = np.zeros((1,4), dtype=int)
