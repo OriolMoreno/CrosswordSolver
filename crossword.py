@@ -1,21 +1,7 @@
 # -*- coding: utf-8 -*-
 import numpy as np
-
-
-"""
--------------------------------------
-POSSIBLE MILLORA AL LLEGIR DICCIONARI
--------------------------------------
-
-from collections import defaultdict
-
-x = ['foo','bar','help','this','guy']
-
-len_dict = defaultdict(list)
-
-for word in x:
-    len_dict[len(word)].append(word)
-"""
+import io
+import time
 #CONSTANTS
 H=0                 #Horitzontal
 V=1                 #Vertical
@@ -25,6 +11,7 @@ Y=1         #coord y
 SIZE=2      #mida paraula
 DIR=3       #orientacio paraula
 
+"""
 #Classe per emmagatzemar paraules al tauler (opció 2)
 class paraulaTauler:
     def __init__(self, dir, mida, coord, confl = [], paraula=''):
@@ -35,12 +22,10 @@ class paraulaTauler:
         self.paraula = paraula
     def printParaula(self):
         print(self.dir,self.mida,self.coord,self.confl,self.paraula)
+"""
 
 class crossWord:
     count = 0
-    """
-    OPCIO 1: llista nxm amb valors individuals
-    """
     #llegeix el fitxer que conté el crossword i guarda la informació en una matriu n x m (soluciona lectura de caracters \n, \t)
     def llegirTauler1(self, fileName):
         taulerArray=[]
@@ -124,43 +109,35 @@ class crossWord:
                     colIni=col+1
                     mida = 0
                 else:
-
-
                     if(col+1>=taulerArray.shape[0]):
 
                         if (taulerArray[col][fila] == 0):  # Si aquesta casella està buida, hi assignem la paraula actual
                             taulerArray[col][fila] = contParaula
                         elif (f[col - 1] != -1): # (mida > 1) or ((mida <= 1) and (f[col - 1] == -1)):
-                            self.colisions[contParaula].append((int(taulerArray[col][fila]), col - colIni))  # Desem a la llista de colisions una tupla amb l'index de la paraula amb qui colisiona i la posició
-                            self.colisions[int(taulerArray[col][fila])].append(((contParaula), fila - self.paraules[int(taulerArray[col][fila])][Y]))
-                        #print(self.colisions)
+                            self.colisions[contParaula].append((int(taulerArray[col][fila]), col - colIni, fila - self.paraules[int(taulerArray[col][fila])][Y]))  # Desem a la llista de colisions una tupla amb l'index de la paraula amb qui colisiona, la posició de la paraula en concret i la posicio de l'altre paraula
+                            self.colisions[int(taulerArray[col][fila])].append(((contParaula), fila - self.paraules[int(taulerArray[col][fila])][Y], col - colIni))
 
                         mida+=1                                       # no hi ha coixinet i hem arribat al final de la fila
                         if(mida > 1):                                           # tornem a comprovar si cumpleix amb els requisits de la mida
                             self.paraules=np.append(self.paraules,[[colIni,fila,mida,V]], axis=0)
                             contParaula+=1
                             self.colisions.append([])
-                            #print('kpasa4',coord)
                             mida=0
                     else:
                         if (taulerArray[col][fila] == 0):  # Si aquesta casella està buida, hi assignem la paraula actual
                             taulerArray[col][fila] = contParaula
                         elif (mida >= 1) or ((col == 0) and (f[col+1] != -1)) or ((mida < 1) and ((f[col - 1] == -1) and (f[col+1] != -1))):
-                            self.colisions[contParaula].append((int(taulerArray[col][fila]), col - colIni))  # Desem a la llista de colisions una tupla amb l'index de la paraula amb qui colisiona i la posició
-
-                            self.colisions[int(taulerArray[col][fila])].append(((contParaula), fila - self.paraules[int(taulerArray[col][fila])][Y]))
-                        #print(self.colisions)
+                            self.colisions[contParaula].append((int(taulerArray[col][fila]), col - colIni, fila - self.paraules[int(taulerArray[col][fila])][Y]))  # Desem a la llista de colisions una tupla amb l'index de la paraula amb qui colisiona i la posició
+                            self.colisions[int(taulerArray[col][fila])].append(((contParaula), fila - self.paraules[int(taulerArray[col][fila])][Y], col - colIni))
                         mida += 1                                               # passem a la seguent columna i actualitzem mida
 
-                #print(mida, col)
                 col += 1
 
-        #return tauler
+
+
 
     def llegirDiccionari(self, fileName):
-        #file = open(fileName,'r')
-        #llista = file.readlines()
-        llista = [linia.rstrip() for linia in open(fileName,'r',errors='replace')] # elimina les \n finals a cada paraula
+        llista = [linia.rstrip() for linia in io.open(fileName,'r',errors='replace')] # elimina les \n finals a cada paraula
         diccionari={}
         for paraula in llista:                                  # organitzem les paraules per longitud en un diccionari
             if len(paraula) in diccionari:
@@ -169,26 +146,28 @@ class crossWord:
                 diccionari[len(paraula)]=[list(paraula)]
         return diccionari
 
-    def printTauler(self):
-        for p in self.paraules:
-            p.printParaula()
-
 
     """
         Per mes endevant
         def arcConsistency(self, rest = [], pAsig = np.zeros((1,1), dtype=object)):
         #LVNA: forats de paraules
         #LVA: paraules oplertes
-        
+
         if pAsig.shape[0] == self.paraules.shape[0]:
             return pAsig
         else:
             for emptyWord in self.paraules:
-        
-        
-        
-        
+
+
+		D[k] = D[k][D[k][:,c]=='A',:]
+
+		Quan tornes enrere has de modificar el domini per evitar múltiples restriccions
+
+
+		PEr reduir diccionari (provar amb el gran): D[i]=D[i][::100,:]
+
         """
+
 
     def checkColisio(self, head, paraula, LVA):
         colisionsCorrectes = 0
@@ -198,17 +177,9 @@ class crossWord:
             #colisio[0] es el numero de la paraula amb la que colisiona
             if LVA[colisio[0]] is not None:   #Si hi ha colisio comprovar la lletra de les dues paraules
                 lletraParaula1 = paraula[colisio[1]]
-                #trobem lletraParaula2
-                found = False
-                i = 0
-                while not found:
-                    colisioParaula2 = self.colisions[colisio[0]][i]
-                    if head == colisioParaula2[0]:
-                        found = True
-                        paraula2 = LVA[colisio[0]]
-                        lletraParaula2 = paraula2[colisioParaula2[1]]
-                    else:
-                        i += 1
+                paraula2 = LVA[colisio[0]]
+                colisioParaula2 = colisio[2]
+                lletraParaula2 = paraula2[colisioParaula2]
                 if lletraParaula1 == lletraParaula2:
                     colisionsCorrectes += 1
                 else:
@@ -240,8 +211,12 @@ class crossWord:
 
     def calcula(self):
         LVNA = np.arange(1, self.paraules.shape[0])
+        LVNA = LVNA.tolist()
+
         lva = [None] * (self.paraules.shape[0])
         lva[0] = "empty"
+
+
         lva = hola.backtracking(lva, LVNA)
 
         for index, paraula in enumerate(lva):
@@ -292,8 +267,12 @@ lva = hola.backtracking(lva, LVNA)      #np.zeros((1,2), dtype = object)
 print(lva)
 """
 #print(hola.paraules)
+start_time = time.time()
+# your code
 hola.calcula()
 print(hola.taulerResultats)
+print(hola.colisions)
+print(time.time() - start_time)
 
 """
 paraules = np.zeros((2,4), dtype=int)
