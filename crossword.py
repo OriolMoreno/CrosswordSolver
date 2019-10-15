@@ -144,7 +144,12 @@ class crossWord:
                 diccionari[len(paraula)].append(list(paraula))
             else:
                 diccionari[len(paraula)]=[list(paraula)]
+        """if(fileName == 'diccionari_A.txt'):
+            for i in diccionari:
+                diccionari[i] = diccionari[i][::100, :]
+        """
         return diccionari
+
 
 
     """
@@ -210,9 +215,21 @@ class crossWord:
         return None
 
     def calcula(self):
+
+        b = np.zeros((self.paraules.shape[0], self.paraules.shape[1] + 1), dtype= int)
+        b[:, :-1] = self.paraules
+        b[:,4] = np.arange(0,self.paraules.shape[0])
+        b = np.flip(sorted(b, key=lambda a_entry: a_entry[2]), axis=0)[:-1]
+
+        print(self.paraules)
+        print(b)
+
+        """
         LVNA = np.arange(1, self.paraules.shape[0])
         LVNA = LVNA.tolist()
-
+        """
+        LVNA = b[:,4]
+        print(LVNA)
         lva = [None] * (self.paraules.shape[0])
         lva[0] = "empty"
 
@@ -267,12 +284,15 @@ lva = hola.backtracking(lva, LVNA)      #np.zeros((1,2), dtype = object)
 print(lva)
 """
 #print(hola.paraules)
-start_time = time.time()
+start_time = time.time_ns()
 # your code
 hola.calcula()
 print(hola.taulerResultats)
 print(hola.colisions)
-print(time.time() - start_time)
+#print(np.sort(hola.paraules, axis = 2))
+#holaa = np.flip(sorted(hola.paraules, key=lambda a_entry: a_entry[2]), axis= 0)
+#print(holaa[:-1])
+print(time.time_ns() - start_time)
 
 """
 paraules = np.zeros((2,4), dtype=int)
