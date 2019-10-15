@@ -214,6 +214,41 @@ class crossWord:
 
         return None
 
+    def updateDomain(self, head, paraula, D):
+        for colisio in self.colisions[head]:
+            D[colisio[0]] = D[colisio[0]][D[colisio[0]][:, colisio[2]] == paraula[colisio[1]], :]
+        return D
+            #D[k] = D[k][D[k][:, c] == 'A', :]
+
+    #ens queda tractar d'alguna manera els dominis buits per recuperarlos. Es modifica la memòria (no es van fent còpies com creiem. Update domain va com toca. D'hauria de modificar backtracking FC segurament.
+
+
+    def backtrackingFC(self, LVA, LVNA, D):
+        if None not in LVA:
+            return LVA
+        else:
+            head = LVNA[0]
+            #print(D[head].size)
+            if D[head].size != 0:
+                for paraula in D[head]:#self.diccionari[self.paraules[head][SIZE]]:  #iterem només a les paraules del diccionari que tenen la mateixa mida que la variable que volem omplir
+                    if self.checkColisio(head, paraula, LVA):
+                        LVA[head] = paraula
+                        D = self.updateDomain(head, paraula, D)
+                        resultat = self.backtrackingFC(LVA, LVNA[1:], D)
+                        if LVA is None:
+                            pass
+                        elif None not in LVA:
+                            return resultat
+
+        return None
+
+    def generaDomain(self):
+        D = []
+        D.append(np.zeros((1,1), dtype= str))
+        for paraula in self.paraules[1:]:
+            D.append(np.asarray(self.diccionari[paraula[SIZE]]))
+        return D
+
     def calcula(self):
 
         b = np.zeros((self.paraules.shape[0], self.paraules.shape[1] + 1), dtype= int)
@@ -221,20 +256,22 @@ class crossWord:
         b[:,4] = np.arange(0,self.paraules.shape[0])
         b = np.flip(sorted(b, key=lambda a_entry: a_entry[2]), axis=0)[:-1]
 
-        print(self.paraules)
-        print(b)
+        #print(self.paraules)
+        #print(b)
+
 
         """
         LVNA = np.arange(1, self.paraules.shape[0])
         LVNA = LVNA.tolist()
         """
         LVNA = b[:,4]
-        print(LVNA)
+        D = self.generaDomain()
+        print(D)
         lva = [None] * (self.paraules.shape[0])
         lva[0] = "empty"
 
-
-        lva = hola.backtracking(lva, LVNA)
+        #lva = self.backtracking(lva, LVNA)
+        lva = self.backtrackingFC(lva, LVNA, D)
 
         for index, paraula in enumerate(lva):
             if paraula == 'empty':
@@ -256,6 +293,9 @@ class crossWord:
 
 
 
+
+
+
     def __init__(self, dic, tauler):
         self.paraules = np.zeros((1,4), dtype=int)
         self.colisions = [[],[]]
@@ -268,6 +308,7 @@ class crossWord:
 
 
 hola = crossWord('diccionari_CB.txt','crossword_CB.txt')
+print(hola.generaDomain())
 """
 print(hola.diccionari)
 #hola.printTauler()
