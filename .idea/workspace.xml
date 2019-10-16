@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="48f51c4c-5b2e-4295-a132-3d4b4e37906e" name="Default Changelist" comment="" />
+    <list default="true" id="48f51c4c-5b2e-4295-a132-3d4b4e37906e" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crossword.py" beforeDir="false" afterPath="$PROJECT_DIR$/crossword.py" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -14,6 +17,7 @@
   <component name="ProjectId" id="1SFI0Gqm2lbJPj5dB1cITGiARlW" />
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
@@ -74,6 +78,7 @@
       <option name="presentableId" value="Default" />
       <updated>1571152691924</updated>
       <workItem from="1571152693174" duration="12380000" />
+      <workItem from="1571243476188" duration="261000" />
     </task>
     <servers />
   </component>
@@ -85,7 +90,9 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="COLUMN_ORDER" />
+            </State>
           </value>
         </entry>
       </map>
